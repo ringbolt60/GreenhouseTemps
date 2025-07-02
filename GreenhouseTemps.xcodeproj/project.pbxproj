@@ -21,9 +21,22 @@
 		18B0039E2E099C44004A4621 /* GreenhouseTemps.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GreenhouseTemps.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		182CEF742E157DD6000D7C85 /* Exceptions for "GreenhouseTempsTests" folder in "GreenhouseTempsTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				TestPlan.xctestplan,
+			);
+			target = 1835C7512E12EBFF0086163D /* GreenhouseTempsTests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		1835C7532E12EBFF0086163D /* GreenhouseTempsTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				182CEF742E157DD6000D7C85 /* Exceptions for "GreenhouseTempsTests" folder in "GreenhouseTempsTests" target */,
+			);
 			path = GreenhouseTempsTests;
 			sourceTree = "<group>";
 		};

@@ -11,31 +11,24 @@ import Testing
 
 struct WeatherLogTests {
     
-    let mockWeatherObs = [MockWeatherOb](repeating: MockWeatherOb(), count: 8)
-    
-    let today = MockWeatherOb(greenhouseTemp: Double.random(in: -19.9...79.9), dateObserved: Date.now)
-    let yesterday = MockWeatherOb(
-        greenhouseTemp: Double.random(in: -19.9...79.9),
-        dateObserved: Date.now.addingTimeInterval(-90_000)
-    )
-    let dayBeforeYesterday = MockWeatherOb(
-        greenhouseTemp: Double.random(in: -19.9...79.9),
-        dateObserved: Date.now.addingTimeInterval(-180_000)
-    )
-    let agesAgo = MockWeatherOb(
-        greenhouseTemp: Double.random(in: -19.9...79.9),
-        dateObserved: Date.distantPast
-        )
-    var obsToBeAdded: [MockWeatherOb] { [
-        today,
-        yesterday,
-        dayBeforeYesterday,
-        agesAgo
-    ]
-    }
-    var expectedMean: Double {
-        (today.greenhouseTemp + yesterday.greenhouseTemp + dayBeforeYesterday
-                .greenhouseTemp) / 3.0
+        
+    func createWeatherObs(number: Int, rollingSpan: Int = 0) -> (obs: [MockWeatherOb], mean: Double) {
+        
+        var obs = [MockWeatherOb]()
+        var total = 0.0
+        for index in 0..<number {
+            let newOb = MockWeatherOb(
+                greenhouseTemp: Double.random(in: -19.9...79.9),
+                dateObserved: Date.now.addingTimeInterval(-86_410.0 * Double(index))
+            )
+            obs.append(newOb)
+            
+        }
+        for index in 0..<rollingSpan {
+            total += obs[index].greenhouseTemp
+        }
+        let mean = total / Double(rollingSpan)
+        return (obs: obs, mean: mean)
     }
 
     @Test func createdWithoutAnyWeatherData() {
@@ -51,18 +44,26 @@ struct WeatherLogTests {
 
     @Test func createdWithDataHasCorrectNumberOfObservations()  {
         // given
-        let sut = WeatherLog(weatherObs: mockWeatherObs)
+        let weatherObs = createWeatherObs(
+            number: 12,
+            rollingSpan: 7
+        )
+        let sut = WeatherLog(weatherObs: weatherObs.obs)
         
         // when
         
         
         // then
-        #expect(sut.weatherObs.count == mockWeatherObs.count)
+        #expect(sut.weatherObs.count == weatherObs.obs.count)
     }
     
     @Test func createdWithDataHasCorrectBooleanForObsevations()  {
         // given
-        let sut = WeatherLog(weatherObs: mockWeatherObs)
+        let weatherObs = createWeatherObs(
+            number: 12,
+            rollingSpan: 7
+        )
+        let sut = WeatherLog(weatherObs: weatherObs.obs)
         
         // when
         
@@ -73,7 +74,11 @@ struct WeatherLogTests {
     
     @Test func clearObservations() {
         // given
-        let sut = WeatherLog(weatherObs: mockWeatherObs)
+        let weatherObs = createWeatherObs(
+            number: 12,
+            rollingSpan: 7
+        )
+        let sut = WeatherLog(weatherObs: weatherObs.obs)
         
         // when
         sut.clearObservations()
@@ -87,18 +92,26 @@ struct WeatherLogTests {
     
     @Test func addingWeatherObIncreasesObservationsByOne()  {
         // given
-        let sut = WeatherLog(weatherObs: mockWeatherObs)
+        let weatherObs = createWeatherObs(
+            number: 12,
+            rollingSpan: 7
+        )
+        let sut = WeatherLog(weatherObs: weatherObs.obs)
         
         // when
         sut.add(observation: MockWeatherOb())
         
         // then
-        #expect(sut.weatherObs.count - mockWeatherObs.count == 1, "The number of observations shopuld be one more than the original initial number of observations.")
+        #expect(sut.weatherObs.count - weatherObs.obs.count == 1, "The number of observations shopuld be one more than the original initial number of observations.")
     }
     
     @Test func addingWeatherObIsAtBeginninOfArray()  {
         // given
-        let sut = WeatherLog(weatherObs: mockWeatherObs)
+        let weatherObs = createWeatherObs(
+            number: 5,
+            rollingSpan: 5
+        )
+        let sut = WeatherLog(weatherObs: weatherObs.obs)
         let randomNote = UUID().uuidString
         
         // when
@@ -111,9 +124,13 @@ struct WeatherLogTests {
         )
     }
     
-    @Test func lastObservationIsTHeMostRecentlyAdded()  {
+    @Test func lastObservationIsTheMostRecentlyAdded()  {
         // given
-        let sut = WeatherLog(weatherObs: mockWeatherObs)
+        let weatherObs = createWeatherObs(
+            number: 12,
+            rollingSpan: 7
+        )
+        let sut = WeatherLog(weatherObs: weatherObs.obs)
         let randomNote = UUID().uuidString
         
         // when
@@ -129,8 +146,11 @@ struct WeatherLogTests {
     
     @Test func returnsAllObservationsInLast7Days() {
         // given
-        
-        let sut = WeatherLog(weatherObs: obsToBeAdded)
+        let weatherObs = createWeatherObs(
+            number: 12,
+            rollingSpan: 7
+        )
+        let sut = WeatherLog(weatherObs: weatherObs.obs)
         
         // when
         let obsInLastSevenDays: [MockWeatherOb] = sut.observationsInLast(
@@ -138,13 +158,19 @@ struct WeatherLogTests {
         ).map {$0 as! MockWeatherOb }
         
         // then
-        #expect(obsInLastSevenDays == [today, yesterday, dayBeforeYesterday], "List of obs within the last seven days is incorrect")
+        #expect(
+            obsInLastSevenDays.contains(weatherObs.obs.prefix(upTo: 7)),
+            "List of obs within the last seven days is incorrect"
+        )
     }
     
     @Test func calculatesCorrectMeanTempOver7Days() {
         // given
-        
-        let sut = WeatherLog(weatherObs: obsToBeAdded)
+        let weatherObs = createWeatherObs(
+            number: 12,
+            rollingSpan: 7
+        )
+        let sut = WeatherLog(weatherObs: weatherObs.obs)
         
         // when
         let meanTemp = sut.meanGreenhouseTempOverLast(
@@ -152,7 +178,10 @@ struct WeatherLogTests {
         )
         
         // then
-        #expect(meanTemp == expectedMean, "Incorrect caculation of expected mean greenhouse temperature")
+        #expect(
+            meanTemp! == weatherObs.mean,
+            "Incorrect caculation of expected mean greenhouse temperature"
+        )
     }
     
     @Test func calculatesCorrectMeanTempOver7DaysWhenNoObservations() {
@@ -181,14 +210,47 @@ struct WeatherLogTests {
         
     @Test func calculatesTempVariationFrom7DayRollingAverage() {
         // given
-        let sut = WeatherLog(weatherObs: obsToBeAdded)
-        let expectedVariation = today.greenhouseTemp - expectedMean
+        let weatherObs = createWeatherObs(
+            number: 12,
+            rollingSpan: 7
+        )
+        let sut = WeatherLog(weatherObs: weatherObs.obs)
+        let expectedVariation = weatherObs.obs[0].greenhouseTemp - weatherObs.mean
 
         // when
-        let meanTemp = sut.variationInGreenhouseTempOverLast(days: 7)
+        let variation = sut.variationInGreenhouseTempOverLast(days: 7)
         
         // then
-        #expect(meanTemp == expectedVariation, "Incorrect calculation of greenhouse temp variation from 7 day rolling average")
+        #expect(variation == expectedVariation, "Incorrect calculation of greenhouse temp variation from 7 day rolling average")
+    }
+    
+    @Test func checksStartsWith7DayRollingPeriod() {
+        // given
+        let weatherObs = createWeatherObs(
+            number: 12,
+            rollingSpan: 7
+        )
+        let sut = WeatherLog(weatherObs: weatherObs.obs)
+        
+        // when
+        
+        // then
+        #expect(sut.rollingPeriod == WeatherLog.RollingPeriod.sevenDays)
+    }
+    
+    @Test func checksToggles7RollingPeriod() {
+        // given
+        let weatherObs = createWeatherObs(
+            number: 12,
+            rollingSpan: 7
+        )
+        let sut = WeatherLog(weatherObs: weatherObs.obs)
+        
+        // when
+        sut.toggleRollingPeriod()
+        
+        // then
+        #expect(sut.rollingPeriod == WeatherLog.RollingPeriod.twentyEightDays)
     }
     
 }

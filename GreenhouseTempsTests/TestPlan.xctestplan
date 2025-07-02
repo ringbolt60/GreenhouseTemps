@@ -1,0 +1,24 @@
+{
+  "configurations" : [
+    {
+      "id" : "87160EB1-797F-443F-A38E-CFFE1A246022",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "testTimeoutsEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:GreenhouseTemps.xcodeproj",
+        "identifier" : "1835C7512E12EBFF0086163D",
+        "name" : "GreenhouseTempsTests"
+      }
+    }
+  ],
+  "version" : 1
+}

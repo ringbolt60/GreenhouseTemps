@@ -24,6 +24,22 @@ class WeatherLog: Codable {
     var hasObservations: Bool {
         if weatherObs.isEmpty { return false} else {return  true }
     }
+    
+    var rollingPeriod = RollingPeriod.sevenDays
+    
+    func toggleRollingPeriod() {
+        switch rollingPeriod {
+        case .sevenDays:
+            rollingPeriod = .twentyEightDays
+        case .twentyEightDays:
+            rollingPeriod = .sevenDays
+        }
+    }
+    
+    enum RollingPeriod: Int, Codable {
+        case sevenDays = 7
+        case twentyEightDays = 28
+    }
 
     var lastObservation: any WeatherData {
         get {
