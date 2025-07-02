@@ -33,8 +33,10 @@ struct WeatherLogTests {
         agesAgo
     ]
     }
-    
-    
+    var expectedMean: Double {
+        (today.greenhouseTemp + yesterday.greenhouseTemp + dayBeforeYesterday
+                .greenhouseTemp) / 3.0
+    }
 
     @Test func createdWithoutAnyWeatherData() {
         // given
@@ -44,10 +46,10 @@ struct WeatherLogTests {
         
         
         // then
-        #expect(sut.weatherObs.isEmpty)
+        #expect(sut.hasObservations == false)
     }
 
-    @Test func createdWithData()  {
+    @Test func createdWithDataHasCorrectNumberOfObservations()  {
         // given
         let sut = WeatherLog(weatherObs: mockWeatherObs)
         
@@ -56,6 +58,17 @@ struct WeatherLogTests {
         
         // then
         #expect(sut.weatherObs.count == mockWeatherObs.count)
+    }
+    
+    @Test func createdWithDataHasCorrectBooleanForObsevations()  {
+        // given
+        let sut = WeatherLog(weatherObs: mockWeatherObs)
+        
+        // when
+        
+        
+        // then
+        #expect(sut.hasObservations == true)
     }
     
     @Test func clearObservations() {
@@ -68,7 +81,7 @@ struct WeatherLogTests {
         
         // then
         #expect(sut.weatherObs.isEmpty,
-            "The obsertvations should be empty."
+            "The observations should be empty."
         )
     }
     
@@ -78,7 +91,6 @@ struct WeatherLogTests {
         
         // when
         sut.add(observation: MockWeatherOb())
-        
         
         // then
         #expect(sut.weatherObs.count - mockWeatherObs.count == 1, "The number of observations shopuld be one more than the original initial number of observations.")
@@ -91,7 +103,6 @@ struct WeatherLogTests {
         
         // when
         sut.add(observation: MockWeatherOb(note: randomNote))
-        
         
         // then
         #expect(
@@ -141,10 +152,43 @@ struct WeatherLogTests {
         )
         
         // then
-        let expectedMean = (
-            today.greenhouseTemp + yesterday.greenhouseTemp + dayBeforeYesterday
-                .greenhouseTemp) / 3.0
         #expect(meanTemp == expectedMean, "Incorrect caculation of expected mean greenhouse temperature")
     }
+    
+    @Test func calculatesCorrectMeanTempOver7DaysWhenNoObservations() {
+        // given
+        let sut = WeatherLog(weatherObs: [])
+        let expectedMeanTemp: Double? = nil
         
+        // when
+        let meanTemp = sut.meanGreenhouseTempOverLast(days: 7)
+        
+        // then
+        #expect(meanTemp == expectedMeanTemp, "Incorrect calculation of mean temp when no observations")
+    }
+    
+    @Test func calculatesTempVariationFrom7DayRollingAverageWhenNoObsertvations() {
+        // given
+        let sut = WeatherLog(weatherObs: [])
+        let expectedVariation: Double? = nil
+        
+        // when
+        let meanTemp = sut.variationInGreenhouseTempOverLast(days: 7)
+        
+        // then
+        #expect(meanTemp == expectedVariation, "Incorrect calculation of temp variation when no observations")
+    }
+        
+    @Test func calculatesTempVariationFrom7DayRollingAverage() {
+        // given
+        let sut = WeatherLog(weatherObs: obsToBeAdded)
+        let expectedVariation = today.greenhouseTemp - expectedMean
+
+        // when
+        let meanTemp = sut.variationInGreenhouseTempOverLast(days: 7)
+        
+        // then
+        #expect(meanTemp == expectedVariation, "Incorrect calculation of greenhouse temp variation from 7 day rolling average")
+    }
+    
 }

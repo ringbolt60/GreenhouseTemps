@@ -1,5 +1,5 @@
 //
-//  ContentView-VieewModel.swift
+//  ContentView-ViewModel.swift
 //  GreenhouseTemps
 //
 //  Created by Jon Walters on 23/06/2025.
@@ -82,7 +82,7 @@ extension ContentView {
 
 extension WeatherOb {
     var formattedDate: String {
-        if dateObserved == Date.distantPast { return "No previous observations"} else {
+        if dateObserved == Date.distantPast { return "No previous observation"} else {
             return dateObserved.formatted(date: .abbreviated, time: .shortened)
         }
         
@@ -106,7 +106,14 @@ extension WeatherOb {
 
 extension WeatherLog {
     var formatted7DayMeanGreenhouseTemp: String {
-        let meanGreenhouseTemp = meanGreenhouseTempOverLast(days: 7)
+        guard let meanGreenhouseTemp = meanGreenhouseTempOverLast(days: 7) else { return "No observations"}
         return "\(meanGreenhouseTemp.formatted(.number.rounded(increment: 0.1))) ℃"
+    }
+    
+    var formatted7DayVariationOfGreenhouseTemp: String {
+        guard let meanGreenhouseTempVariation = variationInGreenhouseTempOverLast(days: 7) else {
+            return "No observations"
+        }
+        return "\(meanGreenhouseTempVariation.formatted(.number.rounded(increment: 0.1).sign(strategy: .always()))) ℃"
     }
 }

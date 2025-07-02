@@ -20,8 +20,6 @@ struct HistoryView: View {
         self.viewModel = ViewModel(log: log)
     }
     
-    
-    
     var body: some View {
         Form {
             Section("Most recent observation") {
@@ -40,28 +38,30 @@ struct HistoryView: View {
                     HStack {
                         Text("Variance")
                         Spacer()
-                        Text(viewModel.variationFromLastPeriodOf(days: 7))
+                        Text(viewModel.log.formatted7DayVariationOfGreenhouseTemp)
                     }
                 }
             
         }
-        Section("Previous seven days observations") {
-            List {
-                ForEach(viewModel.observationsInLast(days: 7), id: \.self.id) {ob in
-                    HStack {
-                        Text(ob.formattedDate)
-                        Spacer()
-                        Text(ob.formattedGreenhouseTemp)
+        if viewModel.log.hasObservations {
+            Section("Previous seven days observations") {
+                List {
+                    ForEach(viewModel.log.observationsInLast(days: 7), id: \.self.id) {ob in
+                        HStack {
+                            Text(ob.formattedDate)
+                            Spacer()
+                            Text(ob.formattedGreenhouseTemp)
+                        }
+                        
                     }
+                }
+                
+                Button("Clear All Observations", role: .destructive) {
+                    viewModel.log.clearObservations()
+                    viewModel.log.save()
+                    dismiss()
                     
                 }
-            }
-            
-            Button("Clear All Observations", role: .destructive) {
-                viewModel.log.clearObservations()
-                viewModel.log.save()
-                dismiss()
-                
             }
         }
         
