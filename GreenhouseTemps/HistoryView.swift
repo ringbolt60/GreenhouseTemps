@@ -27,6 +27,7 @@ struct HistoryView: View {
     var body: some View {
         
         NavigationStack {
+            VStack {
             Form {
                 Section("Most recent observation") {
                     HStack {
@@ -48,7 +49,7 @@ struct HistoryView: View {
                     }
                 }
                 
-                       
+                
                 Button("Select \(viewModel.rollingAverageCommand) rolling mean") {
                     viewModel.log.toggleRollingPeriod()
                     print(viewModel.log.rollingPeriod)
@@ -81,17 +82,18 @@ struct HistoryView: View {
                     }
                 }
                 
+                
+                Button("Clear All Observations", role: .destructive) {
+                    viewModel.log.clearObservations()
+                    viewModel.log.save()
+                    dismiss()
                     
-                    Button("Clear All Observations", role: .destructive) {
-                        viewModel.log.clearObservations()
-                        viewModel.log.save()
-                        dismiss()
-                        
-                    }
                 }
+            }
             
             
         }
+    }
         
     }
 }

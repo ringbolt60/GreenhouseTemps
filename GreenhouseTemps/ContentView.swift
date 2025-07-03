@@ -12,13 +12,14 @@ struct ContentView: View {
     @State private var viewModel = ViewModel()
 
     @State private var isHistoryPresented = false
+    @State private var showingExporter = false
 
     @FocusState private var greenhouseTempIsFocussed: Bool
     @FocusState private var gardenTempIsFocussed: Bool
     @FocusState private var minTempIsFocussed: Bool
     @FocusState private var maxTempIsFocussed: Bool
     @FocusState private var noteIsFocussed: Bool
-
+    
     var body: some View {
         NavigationStack {
             Form {
