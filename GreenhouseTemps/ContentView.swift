@@ -23,18 +23,7 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Last observation") {
-                    Text(viewModel.lastObservation.formattedDate)
-                    Text(viewModel.lastObservation.formattedGreenhouseTemp)
-                    Text(viewModel.lastObservation.formattedTempRange)
-                    Text(viewModel.lastObservation.note)
-                }
-
-                Section("Garden Temperature") {
-                    Text(
-                        viewModel.lastObservation.formattedGardenTemp
-                    )
-                }
+                
 
                 Section("New observation") {
                     HStack {
@@ -88,18 +77,30 @@ struct ContentView: View {
 
                 }
                 .keyboardType(.decimalPad)
+                
+                Section("Last observation") {
+                    Text(viewModel.lastObservation.formattedDate)
+                    Text(viewModel.lastObservation.formattedGreenhouseTemp)
+                    Text(viewModel.lastObservation.formattedTempRange)
+                    Text(viewModel.lastObservation.note)
+                }
 
+                Section("Garden Temperature") {
+                    Text(
+                        viewModel.lastObservation.formattedGardenTemp
+                    )
+                }
             }
             .padding()
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Show History") {
+                    Button("History", systemImage: "rectangle.on.rectangle") {
                         isHistoryPresented = true
 
                     }
                 }
                 ToolbarItem {
-                    Button("Submit") {
+                    Button("Submit", systemImage: "arrow.up.circle") {
                         viewModel.addObservation()
                         gardenTempIsFocussed = false
                         minTempIsFocussed = false

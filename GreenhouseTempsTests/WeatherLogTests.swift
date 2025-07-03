@@ -14,12 +14,17 @@ struct WeatherLogTests {
         
     func createWeatherObs(number: Int, rollingSpan: Int = 0) -> (obs: [MockWeatherOb], mean: Double) {
         
+        let secondsInDay = 86_400.0
+        let lowerLimitTemp = -19.9
+        let upperLimitTemp = 79.9
+        
         var obs = [MockWeatherOb]()
         var total = 0.0
         for index in 0..<number {
             let newOb = MockWeatherOb(
-                greenhouseTemp: Double.random(in: -19.9...79.9),
-                dateObserved: Date.now.addingTimeInterval(-86_410.0 * Double(index))
+                greenhouseTemp: Double
+                    .random(in: lowerLimitTemp...upperLimitTemp),
+                dateObserved: Date.now.addingTimeInterval(-(secondsInDay + 10) * Double(index))
             )
             obs.append(newOb)
             

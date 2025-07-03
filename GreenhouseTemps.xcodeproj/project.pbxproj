@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		182CEFB42E16C3F6000D7C85 /* SwiftCSVEncoder in Frameworks */ = {isa = PBXBuildFile; productRef = 182CEFB32E16C3F6000D7C85 /* SwiftCSVEncoder */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		1835C7562E12EBFF0086163D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -59,6 +63,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				182CEFB42E16C3F6000D7C85 /* SwiftCSVEncoder in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -126,6 +131,7 @@
 			);
 			name = GreenhouseTemps;
 			packageProductDependencies = (
+				182CEFB32E16C3F6000D7C85 /* SwiftCSVEncoder */,
 			);
 			productName = GreenhouseTemps;
 			productReference = 18B0039E2E099C44004A4621 /* GreenhouseTemps.app */;
@@ -159,6 +165,9 @@
 			);
 			mainGroup = 18B003952E099C44004A4621;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				182CEFB22E16C3F6000D7C85 /* XCRemoteSwiftPackageReference "swiftcsvencoder" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 18B0039F2E099C44004A4621 /* Products */;
 			projectDirPath = "";
@@ -457,6 +466,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		182CEFB22E16C3F6000D7C85 /* XCRemoteSwiftPackageReference "swiftcsvencoder" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/scottmatthewman/swiftcsvencoder.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.2.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		182CEFB32E16C3F6000D7C85 /* SwiftCSVEncoder */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 182CEFB22E16C3F6000D7C85 /* XCRemoteSwiftPackageReference "swiftcsvencoder" */;
+			productName = SwiftCSVEncoder;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 18B003962E099C44004A4621 /* Project object */;
 }
