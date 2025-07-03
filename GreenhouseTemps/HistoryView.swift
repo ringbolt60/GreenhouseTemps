@@ -26,6 +26,7 @@ struct HistoryView: View {
     
     var body: some View {
         
+        NavigationStack {
             Form {
                 Section("Most recent observation") {
                     HStack {
@@ -38,24 +39,32 @@ struct HistoryView: View {
                     HStack {
                         Text("\(viewModel.rollingAverageLabel) rolling mean")
                         Spacer()
-                        Text(viewModel.log.formatted7DayMeanGreenhouseTemp)
+                        Text(viewModel.log.formattedMeanGreenhouseTempInRollingPeriod)
                     }
                     HStack {
                         Text("Variance from mean")
                         Spacer()
-                        Text(viewModel.log.formatted7DayVariationOfGreenhouseTemp)
+                        Text(viewModel.log.formattedVariationOfGreenhouseTempInRollingPeriod)
                     }
                 }
                 
-            
-            
-                Button("Select \(viewModel.rollingAverageCommand) rolling average") {
+                       
+                Button("Select \(viewModel.rollingAverageCommand) rolling mean") {
                     viewModel.log.toggleRollingPeriod()
                     print(viewModel.log.rollingPeriod)
                     viewModel.rollingPeriodIs7Days.toggle()
-                
+                    
+                }
             }
+            
+            .toolbar {
+                Button("dismiss") {
+                    dismiss()
+                }
+            }
+            .navigationTitle("History")
         }
+        
         
         if viewModel.log.hasObservations {
             Form {
@@ -71,6 +80,7 @@ struct HistoryView: View {
                         }
                     }
                 }
+                
                     
                     Button("Clear All Observations", role: .destructive) {
                         viewModel.log.clearObservations()
@@ -79,6 +89,7 @@ struct HistoryView: View {
                         
                     }
                 }
+            
             
         }
         

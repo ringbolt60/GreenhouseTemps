@@ -98,6 +98,11 @@ class WeatherLog: Codable {
         return total / Double(obs.count)
     }
     
+    func meanGreenhouseTempOverRollingPeriod() -> Double?  {
+        if weatherObs.isEmpty { return nil }
+        return meanGreenhouseTempOverLast(days: rollingPeriod.rawValue)
+    }
+    
     func variationInGreenhouseTempOverLast(days: Int) -> Double? {
         if weatherObs.isEmpty { return nil }
         return lastObservation.greenhouseTemp - meanGreenhouseTempOverLast(
@@ -105,11 +110,34 @@ class WeatherLog: Codable {
         
     }
     
+    func variationInGreenhouseTempInRollingPeriod() -> Double? {
+        if weatherObs.isEmpty { return nil }
+        return variationInGreenhouseTempOverLast(days: rollingPeriod.rawValue)
+    }
+    
     func clearObservations() {
         weatherObs = []
     }
     
     #if DEBUG
-    static let example = WeatherLog(weatherObs: [WeatherOb.example])
+    static func exampleObservations() -> [WeatherOb] {
+        var obs = [WeatherOb]()
+        for index in 0..<35 {
+            let date = Date.now.addingTimeInterval(-86_410.0 * Double(index))
+            let newOb = WeatherOb(
+                id: UUID().uuidString,
+                greenhouseTemp: Double.random(in: -2.0...35.0),
+                gardenTemp: Double.random(in: -2.0...35.0),
+                maxTemp: Int.random(in: 25...36),
+                minTemp: Int.random(in: 15...24),
+                dateObserved: date,
+                note: "An example note"
+            )
+            obs.append(newOb)
+        }
+        return obs
+    }
+    
+    static let example = WeatherLog(weatherObs: exampleObservations())
     #endif
 }

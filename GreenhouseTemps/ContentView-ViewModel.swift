@@ -39,6 +39,8 @@ extension ContentView {
         }
         
         var isObservationInputValid: Bool {
+            let upperTempLimit = 80.0
+            let lowerTempLimit = -20.0
             guard let greenHouseTemp = self.greenhouseTemp else { return false }
             guard let gardenTemp = self.gardenTemp else { return false }
             guard let minTemp = self.minTemp else { return false }
@@ -46,11 +48,21 @@ extension ContentView {
             if note.count > 80 { return false }
             
             let isGreenhouseTempValid = (
-                greenHouseTemp > -20.0 && greenHouseTemp < 80.0
+                greenHouseTemp > lowerTempLimit && greenHouseTemp < upperTempLimit
             )
-            let isGardenTempValid = ( gardenTemp > -20.0 && gardenTemp < 80.0)
-            let isMaxTempValid = ( maxTemp >= minTemp && maxTemp > -20 && maxTemp < 80)
-            let isMinTempValid = ( minTemp <= maxTemp && minTemp > -20 && minTemp < 80)
+            let isGardenTempValid = (
+                gardenTemp > lowerTempLimit && gardenTemp < upperTempLimit
+            )
+            let isMaxTempValid = (
+                maxTemp >= minTemp && maxTemp > Int(
+                    lowerTempLimit
+                ) && maxTemp < Int(upperTempLimit)
+            )
+            let isMinTempValid = (
+                minTemp <= maxTemp && minTemp > Int(
+                    lowerTempLimit
+                ) && minTemp < Int(upperTempLimit)
+            )
             
             if isGreenhouseTempValid && isGardenTempValid && isMinTempValid && isMaxTempValid { return true } else  { return false }
            
@@ -105,13 +117,15 @@ extension WeatherOb {
 }
 
 extension WeatherLog {
-    var formatted7DayMeanGreenhouseTemp: String {
-        guard let meanGreenhouseTemp = meanGreenhouseTempOverLast(days: 7) else { return "No observations"}
+    var formattedMeanGreenhouseTempInRollingPeriod: String {
+        guard let meanGreenhouseTemp = meanGreenhouseTempOverRollingPeriod() else {
+            return "No observations"
+        }
         return "\(meanGreenhouseTemp.formatted(.number.rounded(increment: 0.1))) ℃"
     }
     
-    var formatted7DayVariationOfGreenhouseTemp: String {
-        guard let meanGreenhouseTempVariation = variationInGreenhouseTempOverLast(days: 7) else {
+    var formattedVariationOfGreenhouseTempInRollingPeriod: String {
+        guard let meanGreenhouseTempVariation = variationInGreenhouseTempInRollingPeriod() else {
             return "No observations"
         }
         return "\(meanGreenhouseTempVariation.formatted(.number.rounded(increment: 0.1).sign(strategy: .always()))) ℃"

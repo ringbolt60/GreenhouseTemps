@@ -25,9 +25,10 @@ struct WeatherLogTests {
             
         }
         for index in 0..<rollingSpan {
+            if index > number - 1 { break }
             total += obs[index].greenhouseTemp
         }
-        let mean = total / Double(rollingSpan)
+        let mean = total / Double(min(rollingSpan, number))
         return (obs: obs, mean: mean)
     }
 
@@ -184,6 +185,43 @@ struct WeatherLogTests {
         )
     }
     
+    @Test func calculatesCorrectMeanTempOver7DayRollingPeriod() {
+        // given
+        let weatherObs = createWeatherObs(
+            number: 12,
+            rollingSpan: 7
+        )
+        let sut = WeatherLog(weatherObs: weatherObs.obs)
+        
+        // when
+        let meanTemp = sut.meanGreenhouseTempOverRollingPeriod()
+        
+        // then
+        #expect(
+            meanTemp! == weatherObs.mean,
+            "Incorrect caculation of expected mean greenhouse temperature"
+        )
+    }
+    
+    @Test func calculatesCorrectMeanTempOver28DayRollingPeriod() {
+        // given
+        let weatherObs = createWeatherObs(
+            number: 40,
+            rollingSpan: 28
+        )
+        let sut = WeatherLog(weatherObs: weatherObs.obs)
+        sut.toggleRollingPeriod()
+        
+        // when
+        let meanTemp = sut.meanGreenhouseTempOverRollingPeriod()
+        
+        // then
+        #expect(
+            meanTemp! == weatherObs.mean,
+            "Incorrect caculation of expected mean greenhouse temperature"
+        )
+    }
+    
     @Test func calculatesCorrectMeanTempOver7DaysWhenNoObservations() {
         // given
         let sut = WeatherLog(weatherObs: [])
@@ -196,7 +234,7 @@ struct WeatherLogTests {
         #expect(meanTemp == expectedMeanTemp, "Incorrect calculation of mean temp when no observations")
     }
     
-    @Test func calculatesTempVariationFrom7DayRollingAverageWhenNoObsertvations() {
+    @Test func calculatesTempVariationFrom7DayRollingAverageWhenNoObservations() {
         // given
         let sut = WeatherLog(weatherObs: [])
         let expectedVariation: Double? = nil
@@ -206,6 +244,22 @@ struct WeatherLogTests {
         
         // then
         #expect(meanTemp == expectedVariation, "Incorrect calculation of temp variation when no observations")
+    }
+    
+    @Test func calculatesTempVariationFrom7DayRollingAverageWhenLessThan7Observations() {
+        // given
+        let weatherObs = createWeatherObs(
+            number: 5,
+            rollingSpan: 7
+        )
+        let sut = WeatherLog(weatherObs: weatherObs.obs)
+        let expectedVariation: Double? = weatherObs.obs[0].greenhouseTemp - weatherObs.mean
+        
+        // when
+        let meanTemp = sut.variationInGreenhouseTempOverLast(days: 7)
+        
+        // then
+        #expect(meanTemp == expectedVariation, "Incorrect calculation of temp variation when less than 7 observations")
     }
         
     @Test func calculatesTempVariationFrom7DayRollingAverage() {
@@ -222,6 +276,39 @@ struct WeatherLogTests {
         
         // then
         #expect(variation == expectedVariation, "Incorrect calculation of greenhouse temp variation from 7 day rolling average")
+    }
+    
+    @Test func calculatesTempVariationFrom28DayRollingAverage() {
+        // given
+        let weatherObs = createWeatherObs(
+            number: 35,
+            rollingSpan: 28
+        )
+        let sut = WeatherLog(weatherObs: weatherObs.obs)
+        sut.toggleRollingPeriod()
+        let expectedVariation = weatherObs.obs[0].greenhouseTemp - weatherObs.mean
+
+        // when
+        let variation = sut.variationInGreenhouseTempInRollingPeriod()
+        
+        // then
+        #expect(variation == expectedVariation, "Incorrect calculation of greenhouse temp variation from 28 day rolling average")
+    }
+    
+    @Test func calculatesTempVariationUsing7DayRollingAverage() {
+        // given
+        let weatherObs = createWeatherObs(
+            number:27,
+            rollingSpan: 7
+        )
+        let sut = WeatherLog(weatherObs: weatherObs.obs)
+        let expectedVariation = weatherObs.obs[0].greenhouseTemp - weatherObs.mean
+
+        // when
+        let variation = sut.variationInGreenhouseTempInRollingPeriod()
+        
+        // then
+        #expect(variation == expectedVariation, "Incorrect calculation of greenhouse temp variation from 28 day rolling average")
     }
     
     @Test func checksStartsWith7DayRollingPeriod() {
