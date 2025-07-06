@@ -7,16 +7,23 @@
 
 import Foundation
 
+/// A collection of time stamped observations of temperatures, as measured by a min-max thermometer
 class WeatherLog: Codable {
-     
-    var weatherObs: [CodableWeatherData]
     
-    var savePath = URL.documentsDirectory.appending(path: "SavedObservations")
     
+    private var weatherObs: [CodableWeatherData]
+    
+    private var savePath = URL.documentsDirectory.appending(path: "SavedObservations")
+    
+    /// Create a WeartherLog from a initial list of observations
+    /// - Parameter weatherObs: a list of WeatherData observations
     init(weatherObs: [any WeatherData] ) {
         self.weatherObs = weatherObs.encoded
     }
     
+    
+    /// Add a new observation
+    /// - Parameter observation: a WeatherData that has the data for the observayion
     func add(observation: any WeatherData) {
         weatherObs.insert(observation.encoded, at: 0)
     }
@@ -27,6 +34,15 @@ class WeatherLog: Codable {
     
     var rollingPeriod = RollingPeriod.sevenDays
     
+    /// Represents  the observations as a file in comma sepearted variable format
+    var csvFileShare: CSVFile? {
+        if weatherObs.isEmpty { return nil }
+        let obs = weatherObs.map { $0.contents } 
+        let csvFile = CSVFile(obs: obs)
+        return csvFile
+    }
+    
+    /// Selects the other possible number of days used to calculate the rolling average
     func toggleRollingPeriod() {
         switch rollingPeriod {
         case .sevenDays:
@@ -36,11 +52,13 @@ class WeatherLog: Codable {
         }
     }
     
+    /// The allowable number of days over which the rolling average is to be calculated
     enum RollingPeriod: Int, Codable {
         case sevenDays = 7
         case twentyEightDays = 28
     }
 
+    /// The most recently recorded observation
     var lastObservation: any WeatherData {
         get {
             if let obs = weatherObs.first {
@@ -63,6 +81,7 @@ class WeatherLog: Codable {
         }
     }
   
+    /// Saves to the documents folder
     func save() {
         do {
             let data = try JSONEncoder().encode(self)
@@ -76,6 +95,7 @@ class WeatherLog: Codable {
         }
     }
     
+    /// The observations taken  less than the rolling period number of days ago
     func observationsInLast(days: Int) -> [any WeatherData] {
         let result = weatherObs.filter{ codableOb in
             
@@ -87,7 +107,8 @@ class WeatherLog: Codable {
              
     }
     
-    func meanGreenhouseTempOverLast(days: Int) -> Double? {
+    /// The mean greenhouse temperature over the last number of days
+    private func meanGreenhouseTempOverLast(days: Int) -> Double? {
         if weatherObs.isEmpty { return nil }
         let obs = observationsInLast(days: days)
         if obs.isEmpty { return 0.0}
@@ -98,23 +119,27 @@ class WeatherLog: Codable {
         return total / Double(obs.count)
     }
     
+    /// The mean greenhouse temperature over the number of days in the rolling period
     func meanGreenhouseTempOverRollingPeriod() -> Double?  {
         if weatherObs.isEmpty { return nil }
         return meanGreenhouseTempOverLast(days: rollingPeriod.rawValue)
     }
     
-    func variationInGreenhouseTempOverLast(days: Int) -> Double? {
+    /// The difference between the last greenhouse temperature recorded and the mean temperature over a number of days
+    private func variationInGreenhouseTempOverLast(days: Int) -> Double? {
         if weatherObs.isEmpty { return nil }
         return lastObservation.greenhouseTemp - meanGreenhouseTempOverLast(
             days: days)!
         
     }
     
+    /// The difference between the last greenhouse temperature recorded and the mean temperature over the rolling period
     func variationInGreenhouseTempInRollingPeriod() -> Double? {
         if weatherObs.isEmpty { return nil }
         return variationInGreenhouseTempOverLast(days: rollingPeriod.rawValue)
     }
     
+    /// Remove all observations in the log
     func clearObservations() {
         weatherObs = []
     }

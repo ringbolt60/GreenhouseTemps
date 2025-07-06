@@ -38,6 +38,7 @@ extension ContentView {
             log.lastObservation
         }
         
+        /// Encapsulates the proeprties of a valid observation
         var isObservationInputValid: Bool {
             let upperTempLimit = 80.0
             let lowerTempLimit = -20.0
@@ -68,6 +69,7 @@ extension ContentView {
            
         }
         
+        /// Adds a new observation to the WeatherLog from user input data
         func addObservation() {
             let newObservation = WeatherOb(
                 id: UUID().uuidString,
@@ -92,6 +94,7 @@ extension ContentView {
     }
 }
 
+/// Fornatting WeatherOb properties for display
 extension WeatherOb {
     var formattedDate: String {
         if dateObserved == Date.distantPast { return "No previous observation"} else {
@@ -116,6 +119,7 @@ extension WeatherOb {
     }
 }
 
+/// Fornatting WeatherLog properties for display
 extension WeatherLog {
     var formattedMeanGreenhouseTempInRollingPeriod: String {
         guard let meanGreenhouseTemp = meanGreenhouseTempOverRollingPeriod() else {

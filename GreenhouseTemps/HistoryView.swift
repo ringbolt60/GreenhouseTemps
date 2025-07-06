@@ -21,11 +21,7 @@ struct HistoryView: View {
         self.viewModel = ViewModel(log: log)
     }
 
-    var csvFileShare: CSVFile? {
-        let obs = log.weatherObs.map { $0.contents }
-        let csvFile = CSVFile(obs: obs)
-        return csvFile
-    }
+    
 
     var body: some View {
 
@@ -82,7 +78,7 @@ struct HistoryView: View {
                         }
                     }
                     ToolbarItem(placement: .primaryAction) {
-                        ShareLink(item: csvFileShare?.csvData() ?? "", subject: Text("Observations"))
+                        ShareLink(item: log.csvFileShare?.csvData() ?? "", subject: Text("Observations"))
                     }
                 }
                 .navigationTitle("History")

@@ -8,30 +8,31 @@
 import Foundation
 
 
-
+/// A single, time stamped reocrd of greenhouse and garden temperatures
 class WeatherOb: WeatherData, Equatable, Identifiable {
-
-
     
     var id: String?
+    /// The temerature observed in side the greenhouse, in degrees centigade
     var greenhouseTemp: Double
+    /// The temerature observed in the garden outside the greenhouse, in degrees centigade
     var gardenTemp: Double
+    /// The maxiuum temerature observed sice the time of the previous observation, in degrees centigade
     var maxTemp: Int
+    ///The minimum temerature observed since the time of the previous observation, in degrees centigade
     var minTemp: Int
+    /// The date and time of the observation
     var dateObserved: Date
+    /// Record of any relevant context for observation
     var note = ""
     
     var encoded: CodableWeatherData {
         .weatherOb(contents: self)
     }
     
-
-    
     static func == (lhs: WeatherOb, rhs: WeatherOb) -> Bool {
         lhs.id == rhs.id
     }
-    
-    
+   
     
     init(
         id: String,
@@ -64,6 +65,7 @@ class WeatherOb: WeatherData, Equatable, Identifiable {
     #endif
 }
 
+/// Protocol of data that must be provided (allows testing using mock objects)
 protocol WeatherData: Codable, Identifiable {
     
     var id: String? { get set }
@@ -87,6 +89,8 @@ protocol WeatherData: Codable, Identifiable {
 
 }
 
+
+/// Allows the WeatherData protocol to be Codable
 enum CodableWeatherData: Codable {
     case weatherOb(contents: WeatherOb)
     #if DEBUG
@@ -143,7 +147,7 @@ struct MockWeatherOb: WeatherData, Equatable {
 }
 #endif
 
-
+/// Encode an array of WeatherData
 extension Array <any WeatherData> {
     var encoded: [CodableWeatherData] {
         self.map(\.encoded)

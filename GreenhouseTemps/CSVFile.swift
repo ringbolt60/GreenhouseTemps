@@ -10,6 +10,7 @@ import Foundation
 import SwiftCSVEncoder
 import SwiftUI
 
+/// A list of WeatherData objects formatted as a CSV file
 struct CSVFile {
 
 
@@ -22,6 +23,7 @@ struct CSVFile {
 
 extension CSVFile {
     
+    /// Cobnverst the CSV data into a string
     func csvData() -> String {
         let table = CSVTable<any WeatherData>(
             columns: [
@@ -41,6 +43,7 @@ extension CSVFile {
     }
 }
 
+/// Allows a file to be transferred out of the applcation
 extension CSVFile: Transferable {
     static var transferRepresentation: some TransferRepresentation {
         DataRepresentation(
