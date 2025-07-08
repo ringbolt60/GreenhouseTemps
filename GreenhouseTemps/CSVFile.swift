@@ -23,8 +23,11 @@ struct CSVFile {
 
 extension CSVFile {
     
-    /// Cobnverst the CSV data into a string
+    /// Convert the CSV data into a string
     func csvData() -> String {
+
+        
+        
         let table = CSVTable<any WeatherData>(
             columns: [
                 CSVColumn("Date", \.dateObserved),
@@ -50,7 +53,8 @@ extension CSVFile: Transferable {
             exportedContentType: .commaSeparatedText) { file in
                 Data(file.csvData().utf8)
             }
-            .suggestedFileName("observations.csv")
+            
 
     }
+
 }

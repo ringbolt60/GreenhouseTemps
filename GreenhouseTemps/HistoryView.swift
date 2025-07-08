@@ -78,7 +78,12 @@ struct HistoryView: View {
                         }
                     }
                     ToolbarItem(placement: .primaryAction) {
-                        ShareLink(item: log.csvFileShare?.csvData() ?? "", subject: Text("Observations"))
+                        ShareLink(
+                            item: log.csvSavePath,
+                            subject: Text("Observations")
+                        )
+                        
+                        
                     }
                 }
                 .navigationTitle("History")

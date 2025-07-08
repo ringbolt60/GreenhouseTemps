@@ -5,7 +5,9 @@
 //  Created by Jon Walters on 02/07/2025.
 //
 
+import CoreTransferable
 import Foundation
+import SwiftCSVEncoder
 
 /// A collection of time stamped observations of temperatures, as measured by a min-max thermometer
 class WeatherLog: Codable {
@@ -14,6 +16,8 @@ class WeatherLog: Codable {
     private var weatherObs: [CodableWeatherData]
     
     private var savePath = URL.documentsDirectory.appending(path: "SavedObservations")
+    
+    var csvSavePath = URL.documentsDirectory.appending(path: "observations.csv")
     
     /// Create a WeartherLog from a initial list of observations
     /// - Parameter weatherObs: a list of WeatherData observations
@@ -34,13 +38,14 @@ class WeatherLog: Codable {
     
     var rollingPeriod = RollingPeriod.sevenDays
     
-    /// Represents  the observations as a file in comma sepearted variable format
-    var csvFileShare: CSVFile? {
-        if weatherObs.isEmpty { return nil }
-        let obs = weatherObs.map { $0.contents } 
-        let csvFile = CSVFile(obs: obs)
-        return csvFile
-    }
+//    /// Represents  the observations as a file in comma sepearted variable format
+//    var csvFileShare: CSVFile? {
+//        if weatherObs.isEmpty { return nil }
+//        let obs = weatherObs.map { $0.contents } 
+//        let csvFile = CSVFile(obs: obs)
+//        
+//        return csvFile
+//    }
     
     /// Selects the other possible number of days used to calculate the rolling average
     func toggleRollingPeriod() {
@@ -93,6 +98,14 @@ class WeatherLog: Codable {
         } catch {
             print("Unable to write data")
         }
+        
+        do {
+            try csvData()
+                .write(to: csvSavePath, atomically: true, encoding: .utf8)
+        } catch {
+            print("Unable to write csv data")
+        }
+ 
     }
     
     /// The observations taken  less than the rolling period number of days ago
@@ -166,3 +179,41 @@ class WeatherLog: Codable {
     static let example = WeatherLog(weatherObs: exampleObservations())
     #endif
 }
+
+
+extension WeatherLog {
+    
+    /// Convert the CSV data into a string
+    func csvData() -> String {
+
+        if weatherObs.isEmpty { return "" }
+        
+        let table = CSVTable<any WeatherData>(
+            columns: [
+                CSVColumn("Date", \.dateObserved),
+                CSVColumn("Greenhouse", \.greenhouseTemp),
+                CSVColumn("Garden", \.gardenTemp),
+                CSVColumn("Min", \.minTemp),
+                CSVColumn("Max", \.maxTemp),
+                CSVColumn("Note", \.note)
+            ],
+            configuration:  CSVEncoderConfiguration(
+                dateEncodingStrategy: .iso8601
+            )
+        )
+        let obs = weatherObs.map { $0.contents }
+        let result = table.export(rows: obs)
+        return result
+    }
+}
+
+/// Allows a file to be transferred out of the applcation
+extension WeatherLog: Transferable {
+    static var transferRepresentation: some TransferRepresentation {
+        DataRepresentation(
+            exportedContentType: .commaSeparatedText) { file in
+                Data(file.csvData().utf8)
+            }
+    }
+
+    }
