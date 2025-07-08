@@ -34,6 +34,16 @@ extension HistoryView {
             rollingPeriodIs7Days ? "28 day" : "7 day"
         }
         
+        var observationsListSectionTitle: String {
+            if log.hasObservations {
+                let number = log.totalObservationNumber
+                let obsShown = number > 7 ? "all shown" : "\(number) shown"
+                let observationText = (number == 1) ? "observation" : "observations"
+                return "\(number.formatted()) \(observationText) - \(obsShown)"
+            } else {
+                return "No Observations"
+            }
+        }
         
     }
     

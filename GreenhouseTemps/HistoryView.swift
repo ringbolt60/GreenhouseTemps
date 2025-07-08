@@ -92,7 +92,8 @@ struct HistoryView: View {
 
             if viewModel.log.hasObservations {
                 Form {
-                    Section("Previous observations") {
+                    Section(viewModel.observationsListSectionTitle) {
+                        
                         List {
                             ForEach(
                                 viewModel.log.observationsInLast(days: 7),

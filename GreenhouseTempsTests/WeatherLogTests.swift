@@ -60,7 +60,7 @@ struct WeatherLogTests {
         
         
         // then
-        #expect(sut.weatherObs.count == weatherObs.obs.count)
+        #expect(sut.totalObservationNumber == weatherObs.obs.count)
     }
     
     @Test func createdWithDataHasCorrectBooleanForObsevations()  {
@@ -91,7 +91,7 @@ struct WeatherLogTests {
         
         
         // then
-        #expect(sut.weatherObs.isEmpty,
+        #expect(!sut.hasObservations,
             "The observations should be empty."
         )
     }
@@ -108,27 +108,12 @@ struct WeatherLogTests {
         sut.add(observation: MockWeatherOb())
         
         // then
-        #expect(sut.weatherObs.count - weatherObs.obs.count == 1, "The number of observations shopuld be one more than the original initial number of observations.")
+        #expect(
+            sut.totalObservationNumber - weatherObs.obs.count == 1,
+            "The number of observations shopuld be one more than the original initial number of observations."
+        )
     }
     
-    @Test func addingWeatherObIsAtBeginninOfArray()  {
-        // given
-        let weatherObs = createWeatherObs(
-            number: 5,
-            rollingSpan: 5
-        )
-        let sut = WeatherLog(weatherObs: weatherObs.obs)
-        let randomNote = UUID().uuidString
-        
-        // when
-        sut.add(observation: MockWeatherOb(note: randomNote))
-        
-        // then
-        #expect(
-            sut.weatherObs.first?.contents.note == randomNote,
-            "The recently entered WeatherData is not at the beginning of the array"
-        )
-    }
     
     @Test func lastObservationIsTheMostRecentlyAdded()  {
         // given
@@ -170,25 +155,7 @@ struct WeatherLogTests {
         )
     }
     
-    @Test func calculatesCorrectMeanTempOver7Days() {
-        // given
-        let weatherObs = createWeatherObs(
-            number: 12,
-            rollingSpan: 7
-        )
-        let sut = WeatherLog(weatherObs: weatherObs.obs)
-        
-        // when
-        let meanTemp = sut.meanGreenhouseTempOverLast(
-            days: 7
-        )
-        
-        // then
-        #expect(
-            meanTemp! == weatherObs.mean,
-            "Incorrect caculation of expected mean greenhouse temperature"
-        )
-    }
+    
     
     @Test func calculatesCorrectMeanTempOver7DayRollingPeriod() {
         // given

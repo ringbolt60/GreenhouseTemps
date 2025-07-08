@@ -36,6 +36,10 @@ class WeatherLog: Codable {
         if weatherObs.isEmpty { return false} else {return  true }
     }
     
+    var totalObservationNumber: Int {
+        weatherObs.count
+    }
+    
     var rollingPeriod = RollingPeriod.sevenDays
     
 //    /// Represents  the observations as a file in comma sepearted variable format
@@ -121,7 +125,7 @@ class WeatherLog: Codable {
     }
     
     /// The mean greenhouse temperature over the last number of days
-    private func meanGreenhouseTempOverLast(days: Int) -> Double? {
+    func meanGreenhouseTempOverLast(days: Int) -> Double? {
         if weatherObs.isEmpty { return nil }
         let obs = observationsInLast(days: days)
         if obs.isEmpty { return 0.0}
@@ -139,7 +143,7 @@ class WeatherLog: Codable {
     }
     
     /// The difference between the last greenhouse temperature recorded and the mean temperature over a number of days
-    private func variationInGreenhouseTempOverLast(days: Int) -> Double? {
+    func variationInGreenhouseTempOverLast(days: Int) -> Double? {
         if weatherObs.isEmpty { return nil }
         return lastObservation.greenhouseTemp - meanGreenhouseTempOverLast(
             days: days)!
